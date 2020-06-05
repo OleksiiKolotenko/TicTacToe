@@ -1,7 +1,7 @@
 let go = 0;
 let undo = [];
 let redo = [];
-let marks = document.querySelectorAll('.cell');
+let match = document.querySelectorAll('.cell');
 
 if(localStorage.getItem('go')){
     go = localStorage.getItem('go');
@@ -16,8 +16,8 @@ if(localStorage.getItem('redo')){
 }
 
 if(localStorage.getItem('undo')){
-    for(let i = 0; i< undo.length; i++){
-        document.getElementById(undo[i].id).classList.add(undo[i].type);
+    for(let q = 0; q < undo.length; q++){
+        document.getElementById(undo[q].id).classList.add(undo[q].type);
     }
 }
 
@@ -34,13 +34,13 @@ document.querySelector('.field').onclick = function ticTacToe(event){
         if(event.target.className == 'cell'){
             if(go % 2 == 0){
                 event.target.classList.add('ch');
-                undo.push(new steps(event.target.id,'ch'));
+                undo.push(new step(event.target.id,'ch'));
                 redo = [];
                 document.querySelector('.redo-btn').disabled = true;
             }
             else{
                 event.target.classList.add('r');
-                undo.push(new steps(event.target.id,'r'));
+                undo.push(new step(event.target.id,'r'));
                 redo = [];
                 document.querySelector('.redo-btn').disabled = true;
             }
@@ -56,16 +56,16 @@ document.querySelector('.field').onclick = function ticTacToe(event){
     localStorage.setItem('redo', JSON.stringify(redo));
 }
 
-function stepss(id, type) {
+function step(id, type) {
     this.id = id;
     this.type = type;
 }
 
 document.querySelector('.undo-btn').addEventListener('click', function(){
-    let undoObject = undo.pop();
-    redo.push(undoObject);
+    let undoObj = undo.pop();
+    redo.push(undoObj);
     document.querySelector('.redo-btn').disabled = false;
-    document.getElementById(undoObject.id).classList.rego(undoObject.type);
+    document.getElementById(undoObj.id).classList.rego(undoObj.type);
     go--;
     if(undo.length == 0){
         document.querySelector('.undo-btn').disabled = true;
@@ -76,9 +76,9 @@ document.querySelector('.undo-btn').addEventListener('click', function(){
 });
 
 document.querySelector('.redo-btn').addEventListener('click', function(){
-    let redoObject = redo.pop();
-    undo.push(redoObject);
-    document.getElementById(redoObject.id).classList.add(redoObject.type);
+    let redoObj = redo.pop();
+    undo.push(redoObj);
+    document.getElementById(redoObj.id).classList.add(redoObj.type);
     document.querySelector('.undo-btn').disabled = false;
     checkWin();
     go++;
@@ -92,83 +92,84 @@ document.querySelector('.redo-btn').addEventListener('click', function(){
 
 
 let size = Math.sqrt(document.querySelectorAll('.cell').length);
-let arr = new Array(), row, col;
-let x = 0;
-for (row = 0; row < size; row++) {
-    arr[row] = new Array();
-    for (col = 0; col < size; col++) {
-        arr[row][col] = c;
-        x++;
+let arr = new Array(), rows, cols;
+let c = 0;
+for (rows = 0; rows < size; rows++) {
+    arr[rows] = new Array();
+    for (cols = 0; cols < size; cols++) {
+        arr[rows][cols] = c;
+        c++;
     }
 }
 
 
-function check(){
-    let play = (go % 2 == 0) ? 'ch' : 'r';
-    let win = [];
-    for (row = 0; row < size; row++) {
-        similiar = 0;
+function checkWin(){
+    let player = (go % 2 == 0) ? 'ch' : 'r';
+    let winCells = [];
+    //vertical
+    for (rows = 0; rows < size; rows++) {
+        matches = 0;
         for (cols = 0; cols < size; cols++) {
             if (document.getElementById(`c-${arr[cols][rows]}`).classList.contains(player)) {
-                similiar++;
-                winMarks.push(arr[cols][rows]);
-                if (similiar >= size) {
-                    win(1, winMarks);
+                matches++;
+                winCells.push(arr[cols][rows]);
+                if (matches >= size) {
+                    win(1, winCells);
                 }
             } 
             else {
-                similiar = 0;
-                winMarks = [];
+                matches = 0;
+                winCells = [];
             }
         }
     }
     //horizontal
     for (rows = 0; rows < size; rows++) {
-        similiar = 0;
+        matches = 0;
         for (cols = 0; cols < size; cols++) {
             if (document.getElementById(`c-${arr[rows][cols]}`).classList.contains(player)) {
-                similiar++;
-                winMarks.push(arr[rows][cols]);
-                if (similiar >= size) {
-                    win(2, winMarks);
+                matches++;
+                winCells.push(arr[rows][cols]);
+                if (matches >= size) {
+                    win(2, winCells);
                 }
             } 
             else {
-                similiar = 0;
-                winMarks = [];
+                matches = 0;
+                winCells = [];
             }
         }
     }
     //diagonal-right
-    similiar = 0;
-    winMarks = [];
+    matches = 0;
+    winCells = [];
     for (rows = 0; rows < size; rows++) {
         if(document.getElementById(`c-${arr[rows][rows]}`).classList.contains(player)){
-            winMarks.push(arr[rows][rows]);
-            similiar++;
-            if (similiar >= size) {
-                win(3, winMarks);
+            winCells.push(arr[rows][rows]);
+            matches++;
+            if (matches >= size) {
+                win(3, winCells);
             }
         } 
         else {
-            winMarks = [];
-            similiar = 0;
+            winCells = [];
+            matches = 0;
         }
     }
     //diagonal-left
-    similiar = 0;
-    winMarks = [];
+    matches = 0;
+    winCells = [];
     for (rows = size-1; rows >= 0; rows--) {
         if(document.getElementById(`c-${arr[rows][Math.abs((size - 1) - rows)]}`).classList.contains(player)){
-            winMarks.push(arr[rows][Math.abs((size - 1) - rows)]);
-            similiar++;
-            if (similiar >= size) {
-                win(4, winMarks);
+            winCells.push(arr[rows][Math.abs((size - 1) - rows)]);
+            matches++;
+            if (matches >= size) {
+                win(4, winCells);
             }
         } 
         else {
-            winMarks = [];
-            similiar = 0;
+            winCells = [];
+            matches = 0;
         }
     }
     if(undo.length >= cells.length && document.querySelector('.hidden')){
@@ -176,7 +177,7 @@ function check(){
     }
 }
 
-function win(number, winMarks){
+function win(number, winCells){
     document.querySelector('.won-title').classList.rego('hidden');
     if(go % 2 == 0){
         document.querySelector('.won-message').innerHTML = 'Crosses won!';
@@ -187,16 +188,16 @@ function win(number, winMarks){
 
     switch(number){
         case 1:
-            winMarks.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'vertical')});
+            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'vertical')});
         break;
         case 2:
-            winMarks.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'horizontal')});
+            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'horizontal')});
         break;
         case 3:
-            winMarks.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'diagonal-right')});
+            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'diagonal-right')});
         break;
         case 4:
-            winMarks.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'diagonal-left')});
+            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'diagonal-left')});
         break;
     }
     document.querySelector('.undo-btn').disabled = true;
@@ -211,8 +212,8 @@ function draw(){
     undo = [];
 }
 document.querySelector('.restart-btn').onclick = function reset(){
-    for (x = 0; x < marks.length; x++) {
-        marks[x].classList.rego('ch', 'r', 'win', 'vertical', 'horizontal', 'diagonal-right', 'diagonal-left');
+    for (x = 0; x < cells.length; x++) {
+        cells[x].classList.rego('ch', 'r', 'win', 'vertical', 'horizontal', 'diagonal-right', 'diagonal-left');
     }
     document.querySelector('.won-title').classList.add('hidden');
     go = 0;
