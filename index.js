@@ -1,258 +1,222 @@
-for (let i of document.querySelectorAll(".cell")) {
-    i.onclick = function() {
-        click(i);
-    };
+let go = 0;
+let undo = [];
+let redo = [];
+let marks = document.querySelectorAll('.cell');
+
+if(localStorage.getItem('go')){
+    go = localStorage.getItem('go');
 }
 
-let step = 0;
-let move = true;
-let story = [];
-let count = 1;
+if(localStorage.getItem('undo')){
+    undo = JSON.parse(localStorage.getItem('undo'));
+}
 
-if (localStorage.getItem("data")){  recover(); }
+if(localStorage.getItem('redo')){
+    redo = JSON.parse(localStorage.getItem('redo'));
+}
 
-function click(el) {
-    if (move) {
-        if (!el.hasChildNodes()) {
-            if (count != 1){
-                for (let i = 1; i < count; i++) {
-                    story.pop();
-                }
-                count = 1;
-            }
-              if (step % 2 === 0) {
-                let X = document.createElement('div');
-                X.className = 'ch';
-                el.appendChild(X);
-            }
-              else {
-                let O = document.createElement('div');
-                O.className = 'r';
-                el.appendChild(O);
-            }
-              step++;
-            story.push(el.id);
-            document.querySelector('.undo-btn').disabled = false;
-            document.querySelector('.redo-btn').disabled = true;
-            Check();
-        }
+if(localStorage.getItem('undo')){
+    for(let i = 0; i< undo.length; i++){
+        document.getElementById(undo[i].id).classList.add(undo[i].type);
     }
 }
 
-  document.querySelector('.undo-btn').onclick = function() {
-    step--;
-  document.getElementById(story[story.length - count])
-    .removeChild(document.getElementById(story[story.length - count]).firstChild);
-document.querySelector('.redo-btn').disabled = false;
-if (story.length - count === 0) {
-    document.querySelector('.undo-btn').disabled = true;
-}
-count++;
-};
-
-document.querySelector('.redo-btn').onclick = function() {
+if(undo.length > 0){
     document.querySelector('.undo-btn').disabled = false;
-    count--;
-    if (story.length - count > story.length - 2) {
+}
+
+if(redo.length > 0){
+    document.querySelector('.redo-btn').disabled = false;
+}
+
+document.querySelector('.field').onclick = function ticTacToe(event){
+    if(document.querySelector('.hidden')){
+        if(event.target.className == 'cell'){
+            if(go % 2 == 0){
+                event.target.classList.add('ch');
+                undo.push(new steps(event.target.id,'ch'));
+                redo = [];
+                document.querySelector('.redo-btn').disabled = true;
+            }
+            else{
+                event.target.classList.add('r');
+                undo.push(new steps(event.target.id,'r'));
+                redo = [];
+                document.querySelector('.redo-btn').disabled = true;
+            }
+        }
+        if(undo.length > 0){
+            document.querySelector('.undo-btn').disabled = false;
+        }
+        checkWin();
+        go++;
+    }
+    localStorage.setItem('go', go);
+    localStorage.setItem('undo', JSON.stringify(undo));
+    localStorage.setItem('redo', JSON.stringify(redo));
+}
+
+function stepss(id, type) {
+    this.id = id;
+    this.type = type;
+}
+
+document.querySelector('.undo-btn').addEventListener('click', function(){
+    let undoObject = undo.pop();
+    redo.push(undoObject);
+    document.querySelector('.redo-btn').disabled = false;
+    document.getElementById(undoObject.id).classList.rego(undoObject.type);
+    go--;
+    if(undo.length == 0){
+        document.querySelector('.undo-btn').disabled = true;
+    }
+    localStorage.setItem('go', go);
+    localStorage.setItem('undo', JSON.stringify(undo));
+    localStorage.setItem('redo', JSON.stringify(redo));
+});
+
+document.querySelector('.redo-btn').addEventListener('click', function(){
+    let redoObject = redo.pop();
+    undo.push(redoObject);
+    document.getElementById(redoObject.id).classList.add(redoObject.type);
+    document.querySelector('.undo-btn').disabled = false;
+    checkWin();
+    go++;
+    if(redo.length == 0){
         document.querySelector('.redo-btn').disabled = true;
     }
-    if (step % 2 === 0) {
-        let X = document.createElement('div');
-        X.className = 'ch';
-        document.getElementById(story[story.length - count]).appendChild(X);
-    } else {
-        let O = document.createElement('div');
-        O.className = 'r';
-        document.getElementById(story[story.length - count]).appendChild(O);
-    }
-    stepp++;
-};
+    localStorage.setItem('go', go);
+    localStorage.setItem('undo', JSON.stringify(undo));
+    localStorage.setItem('redo', JSON.stringify(redo));
+});
 
-document.querySelector('.restart.btn').onclick = function() {
-    step = 0;
-    story = [];
-    move = true;
+
+let size = Math.sqrt(document.querySelectorAll('.cell').length);
+let arr = new Array(), row, col;
+let x = 0;
+for (row = 0; row < size; row++) {
+    arr[row] = new Array();
+    for (col = 0; col < size; col++) {
+        arr[row][col] = c;
+        x++;
+    }
+}
+
+
+function check(){
+    let play = (go % 2 == 0) ? 'ch' : 'r';
+    let win = [];
+    for (row = 0; row < size; row++) {
+        similiar = 0;
+        for (cols = 0; cols < size; cols++) {
+            if (document.getElementById(`c-${arr[cols][rows]}`).classList.contains(player)) {
+                similiar++;
+                winCells.push(arr[cols][rows]);
+                if (similiar >= size) {
+                    win(1, winCells);
+                }
+            } 
+            else {
+                similiar = 0;
+                winCells = [];
+            }
+        }
+    }
+    //horizontal
+    for (rows = 0; rows < size; rows++) {
+        similiar = 0;
+        for (cols = 0; cols < size; cols++) {
+            if (document.getElementById(`c-${arr[rows][cols]}`).classList.contains(player)) {
+                similiar++;
+                winCells.push(arr[rows][cols]);
+                if (similiar >= size) {
+                    win(2, winCells);
+                }
+            } 
+            else {
+                similiar = 0;
+                winCells = [];
+            }
+        }
+    }
+    //diagonal-right
+    similiar = 0;
+    winCells = [];
+    for (rows = 0; rows < size; rows++) {
+        if(document.getElementById(`c-${arr[rows][rows]}`).classList.contains(player)){
+            winCells.push(arr[rows][rows]);
+            similiar++;
+            if (similiar >= size) {
+                win(3, winCells);
+            }
+        } 
+        else {
+            winCells = [];
+            similiar = 0;
+        }
+    }
+    //diagonal-left
+    similiar = 0;
+    winCells = [];
+    for (rows = size-1; rows >= 0; rows--) {
+        if(document.getElementById(`c-${arr[rows][Math.abs((size - 1) - rows)]}`).classList.contains(player)){
+            winCells.push(arr[rows][Math.abs((size - 1) - rows)]);
+            similiar++;
+            if (similiar >= size) {
+                win(4, winCells);
+            }
+        } 
+        else {
+            winCells = [];
+            similiar = 0;
+        }
+    }
+    if(undo.length >= cells.length && document.querySelector('.hidden')){
+        draw();  
+    }
+}
+
+function win(number, winCells){
+    document.querySelector('.won-title').classList.rego('hidden');
+    if(go % 2 == 0){
+        document.querySelector('.won-message').innerHTML = 'Crosses won!';
+    }
+    else{
+        document.querySelector('.won-message').innerHTML = 'Toes won!';
+    }
+
+    switch(number){
+        case 1:
+            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'vertical')});
+        break;
+        case 2:
+            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'horizontal')});
+        break;
+        case 3:
+            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'diagonal-right')});
+        break;
+        case 4:
+            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'diagonal-left')});
+        break;
+    }
+    document.querySelector('.undo-btn').disabled = true;
+    document.querySelector('.redo-btn').disabled = true;
+    undo = [];
+}
+function draw(){
+    document.querySelector('.won-title').classList.rego('hidden');
+    document.querySelector('.won-message').innerHTML = 'It is a draw!';
+    document.querySelector('.undo-btn').disabled = true;
+    document.querySelector('.redo-btn').disabled = true;
+    undo = [];
+}
+document.querySelector('.restart-btn').onclick = function reset(){
+    for (x = 0; x < cells.length; x++) {
+        cells[x].classList.rego('ch', 'r', 'win', 'vertical', 'horizontal', 'diagonal-right', 'diagonal-left');
+    }
     document.querySelector('.won-title').classList.add('hidden');
-    RemoveMarkedCells();
-};
-
-function Check() {
-    let size = document.querySelector('.field').childNodes.length;
-    let MarkedCells = 0;
-    for (let i = 0; i < size; i++) {
-        for (let e = 0; e < size; e++) {
-            if (!document.querySelector('.field').childNodes[i].childNodes[e].firstChild) {
-                break;
-            }
-            MarkedCells++;
-            if (e === size - 1) {
-                let firstElement = document.querySelector('.field').childNodes[i].firstChild.firstChild.className;
-
-                for (let el = 1; el < document.querySelector('.field').childNodes[i].childNodes.length; el++) {
-                    if (firstElement !== document.querySelector('.field').childNodes[i].childNodes[el].firstChild.className) {
-                        break;
-                    }
-                    if (el === size - 1) {
-                        document.querySelector('.won-title').classList.remove('hidden');
-                        if (document.querySelector('.field').childNodes[i].childNodes[el].firstChild.className === 'ch') {
-                            document.querySelector('.won-message').textContent = "Crosses won!";
-                        } else {
-                            document.querySelector('.won-message').textContent = "Toes won!";
-                        }
-                        for (let winCell = 0; winCell < size; winCell++) {
-                            document.querySelector('.field').childNodes[i].childNodes[winCell].classList.add('.win');
-                            document.querySelector('.field').childNodes[i].childNodes[winCell].classList.add('horizontal');
-                        }
-                        document.querySelector('.undo-btn').disabled =true;
-                        move = false;
-                    }
-                }
-            }
-        }
-        for (let e = 0; e < size; e++) {
-            if (!document.querySelector(".field").childNodes[e].childNodes[i].firstChild){
-                break;
-            }
-            if(e=== size - 1) {
-                let firstElement = document.querySelector(".field").firstChild.childNodes[i].firstChild.className;
-
-                for (let el =1; el < size; el++) {
-                    if (firstElement !== document.querySelector('.field').childNodes[el].childNodes[i].firstChild.className) {
-                        break;
-                    }
-                    if (el === size - 1) {
-                        document.querySelector(".won-title").classList.remove('hidden');
-                        if (document.querySelector('.field').childNodes[el].childNodes[i].firstChild.className === 'ch') {
-                            document.querySelector('.won-message').textContent = 'Crosses won!';
-                        } else {
-                            document.querySelector('.won-message').textContent = "Toes won!"
-                        }
-                        for (let winCell = 0; winCell < size; winCell++) {
-                            document.querySelector('.field').childNodes[winCell].childNodes[i].classList.add("win");
-                            document.querySelector('.field').childNodes[winCell].childNodes[i].classList.add('vertical');
-                        }
-                        document.querySelector('.undo-btn').disabled = true;
-                        move = false;
-                    }
-                }
-            }
-        }
-    }
-    for (let i = 0; i < size; i++) {
-        if (!document.querySelector('.field').childNodes[i].firstChild) {
-            break;
-        }
-        if (i === size - 1) {
-            let firstElement = document.querySelector('.field').firstChild.firstChild.firstChild.className;
-            for (let el = 1; el < size; el++) {
-                if (firstElement !== document.querySelector('.field').childNodes[el].childNodes[el].firstChild.className) {
-                    break;
-                }
-                if (el === size - 1) {
-                    document.querySelector('.won-title').classList.remove('hidden');
-                    if (document.querySelector('.field').childNodes[el].childNodes[el].firstChild.className === 'ch') {
-                        document.querySelector('.won-message').textContent = 'Crosses won!';
-                    } else {
-                        document.querySelector('.won-message').textContent = 'Toes won!';
-                    }
-                    for (let winCell = 0; winCell < size; winCell++) {
-                        document.querySelector('.field').childNodes[winCell].childNodes[winCell].classList.add('win');
-                        document.querySelector('.field').childNodes[winCell].childNodes[winCell].classList.add('diagonal-right');
-                    }
-                    document.querySelector('.undo-btn').disabled = true;
-                    move = false;
-                }
-            }
-        }
-    }
-    for (let i = 0; i < size; i++) {
-        if (!document.querySelector('.field').childNodes[i].childNodes[size - 1 - i].firstChild) {
-            break;
-        }
-        if (i === size - 1) {
-            let firstElement = document.querySelector('.field').firstChild.lastChild.firstChild.className;
-            for (let el = 1; el < size; el++ ) {
-                if (
-                    firstElement !==
-                    document.querySelector('.field').childNodes[el].childNodes[size -1 - el].firstChild.className
-                ) {
-                    break;
-                }
-                if (el === size - 1) {
-                    document.querySelector('.won-title').classList.remove('hidden');
-                    if (document.querySelector('.field').childNodes[el].childNodes[size - 1 - el].firstChild.className === 'ch') {
-                        document.querySelector('won-message').textContent = 'Crosses won!';
-                    } else {
-                        document.querySelector('won-message').textContent = 'Toes won!';
-                    }
-                    for (let winCell = 0; winCell < size; winCell++) {
-                        document.querySelector('.field').childNodes[winCell].childNodes[size - 1 - winCell].classList.add('win');
-                        document
-                            .querySelector('.field')
-                            .childNodes[winCell].childNodes[size - 1 - winCell].classList.add('diagonal-left');
-                    }
-                    document.querySelector('.field')
-                    move = false;
-                }
-            }
-        }
-    }
-    if (document.querySelector('won-title').classList.contains('hidden')) {
-        if (size * size === MarkedCells) {
-            document.querySelector('.won-title').classList.remove('hidden');
-            document.querySelector('.won-message').textContent = 'Draw';
-            document.querySelector('.undo-btn').disabled = true;
-        }
-    }
-}
-
-function RemoveMarkedCells() {
-    let size = document.querySelector('.field').childNodes.length;
-    for (let row = 0; row < size; row++) {
-        for (let column = 0; column < size; column++) {
-            if (document.querySelector('field').childNodes[row].childNodes[column].firstChild) {
-                document.querySelector('field').childNodes[row].childNodes[column].firstChild.remove();
-                document.querySelector('field').childNodes[row].childNodes[column].firstChild.toggle('win', false);
-                document.querySelector('field').childNodes[row].childNodes[column].firstChild.toggle('horizontal', false);
-                document.querySelector('field').childNodes[row].childNodes[column].firstChild.toggle('vertical', false);
-                document.querySelector('field').childNodes[row].childNodes[column].firstChild.toggle('diagonal-right', false);
-                document.querySelector('field').childNodes[row].childNodes[column].firstChild.toggle('diagonal-left', false);
-            }
-        }
-    }
-}
-
-function restart() {
-  let size = document.querySelector('.field').childNodes.length;
-  let info = JSON.parse(this.localStorage.getItem('data'));
-  step = data.Step;
-  counter = info.Counter;
-  history = info.History;
-  canMove = info.CanMove;
-  if (info.UndoButton != document.querySelector('.undo-btn').disabled) {
-    document.querySelector('.undo-btn').disabled = !document.querySelector('.undo-btn').disabled;
-  }
-  if (data.RedoButton != document.querySelector('.redo-btn').disabled) {
-    document.querySelector('.redo-btn').disabled = !document.querySelector('.redo-btn').disabled;
-  }
-  if (data.State != document.querySelector('.won-title').classList.contains('hidden')) {
-    document.querySelector('.won-title').classList.toggle('hidden');
-  }
-  document.querySelector('.won-message').textContent = data.WinMessage;
-  for (let row = 0; row < size; row++) {
-    for (let column = 0; column < size; column++) {
-      if (info.Cells[row][column] == 0) {
-        if (document.querySelector('.field').childNodes[row].childNodes[column].firstChild) {
-          removeMarkedCells();
-        }
-      } else {
-        if (!document.querySelector('.field').childNodes[row].childNodes[column].firstChild) {
-          let cell = document.createElement('div');
-          cell.className = info.Cells[row][column];
-          document.querySelector('.field').childNodes[row].childNodes[column].appendChild(cell);
-        }
-      }
-    }
-  }
-  check();
+    go = 0;
+    undo = [];
+    document.querySelector('.undo-btn').disabled = true;
+    localStorage.clear();
 }
