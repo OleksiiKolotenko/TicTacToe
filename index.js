@@ -1,59 +1,59 @@
-let go = 0;
-let undo = [];
-let redo = [];
-let match = document.querySelectorAll('.cell');
+let move = 0;
+let undoArr = [];
+let redoArr = [];
+let cells = document.querySelectorAll('.cell');
 
-if(localStorage.getItem('go')){
-    go = localStorage.getItem('go');
+if(localStorage.getItem('move')){
+    move = localStorage.getItem('move');
 }
 
-if(localStorage.getItem('undo')){
-    undo = JSON.parse(localStorage.getItem('undo'));
+if(localStorage.getItem('undoArr')){
+    undoArr = JSON.parse(localStorage.getItem('undoArr'));
 }
 
-if(localStorage.getItem('redo')){
-    redo = JSON.parse(localStorage.getItem('redo'));
+if(localStorage.getItem('redoArr')){
+    redoArr = JSON.parse(localStorage.getItem('redoArr'));
 }
 
-if(localStorage.getItem('undo')){
-    for(let q = 0; q < undo.length; q++){
-        document.getElementById(undo[q].id).classList.add(undo[q].type);
+if(localStorage.getItem('undoArr')){
+    for(let q = 0; q < undoArr.length; q++){
+        document.getElementById(undoArr[q].id).classList.add(undoArr[q].type);
     }
 }
 
-if(undo.length > 0){
+if(undoArr.length > 0){
     document.querySelector('.undo-btn').disabled = false;
 }
 
-if(redo.length > 0){
+if(redoArr.length > 0){
     document.querySelector('.redo-btn').disabled = false;
 }
 
 document.querySelector('.field').onclick = function ticTacToe(event){
     if(document.querySelector('.hidden')){
         if(event.target.className == 'cell'){
-            if(go % 2 == 0){
+            if(move % 2 == 0){
                 event.target.classList.add('ch');
-                undo.push(new step(event.target.id,'ch'));
-                redo = [];
+                undoArr.push(new step(event.target.id,'ch'));
+                redoArr = [];
                 document.querySelector('.redo-btn').disabled = true;
             }
             else{
                 event.target.classList.add('r');
-                undo.push(new step(event.target.id,'r'));
-                redo = [];
+                undoArr.push(new step(event.target.id,'r'));
+                redoArr = [];
                 document.querySelector('.redo-btn').disabled = true;
             }
         }
-        if(undo.length > 0){
+        if(undoArr.length > 0){
             document.querySelector('.undo-btn').disabled = false;
         }
         checkWin();
-        go++;
+        move++;
     }
-    localStorage.setItem('go', go);
-    localStorage.setItem('undo', JSON.stringify(undo));
-    localStorage.setItem('redo', JSON.stringify(redo));
+    localStorage.setItem('move', move);
+    localStorage.setItem('undoArr', JSON.stringify(undoArr));
+    localStorage.setItem('redoArr', JSON.stringify(redoArr));
 }
 
 function step(id, type) {
@@ -62,32 +62,32 @@ function step(id, type) {
 }
 
 document.querySelector('.undo-btn').addEventListener('click', function(){
-    let undoObj = undo.pop();
-    redo.push(undoObj);
+    let undoObj = undoArr.pop();
+    redoArr.push(undoObj);
     document.querySelector('.redo-btn').disabled = false;
-    document.getElementById(undoObj.id).classList.rego(undoObj.type);
-    go--;
-    if(undo.length == 0){
+    document.getElementById(undoObj.id).classList.remove(undoObj.type);
+    move--;
+    if(undoArr.length == 0){
         document.querySelector('.undo-btn').disabled = true;
     }
-    localStorage.setItem('go', go);
-    localStorage.setItem('undo', JSON.stringify(undo));
-    localStorage.setItem('redo', JSON.stringify(redo));
+    localStorage.setItem('move', move);
+    localStorage.setItem('undoArr', JSON.stringify(undoArr));
+    localStorage.setItem('redoArr', JSON.stringify(redoArr));
 });
 
 document.querySelector('.redo-btn').addEventListener('click', function(){
-    let redoObj = redo.pop();
-    undo.push(redoObj);
+    let redoObj = redoArr.pop();
+    undoArr.push(redoObj);
     document.getElementById(redoObj.id).classList.add(redoObj.type);
     document.querySelector('.undo-btn').disabled = false;
     checkWin();
-    go++;
-    if(redo.length == 0){
+    move++;
+    if(redoArr.length == 0){
         document.querySelector('.redo-btn').disabled = true;
     }
-    localStorage.setItem('go', go);
-    localStorage.setItem('undo', JSON.stringify(undo));
-    localStorage.setItem('redo', JSON.stringify(redo));
+    localStorage.setItem('move', move);
+    localStorage.setItem('undoArr', JSON.stringify(undoArr));
+    localStorage.setItem('redoArr', JSON.stringify(redoArr));
 });
 
 
@@ -104,7 +104,7 @@ for (rows = 0; rows < size; rows++) {
 
 
 function checkWin(){
-    let player = (go % 2 == 0) ? 'ch' : 'r';
+    let player = (move % 2 == 0) ? 'ch' : 'r';
     let winCells = [];
     //vertical
     for (rows = 0; rows < size; rows++) {
@@ -172,14 +172,14 @@ function checkWin(){
             matches = 0;
         }
     }
-    if(undo.length >= cells.length && document.querySelector('.hidden')){
+    if(undoArr.length >= cells.length && document.querySelector('.hidden')){
         draw();  
     }
 }
 
 function win(number, winCells){
-    document.querySelector('.won-title').classList.rego('hidden');
-    if(go % 2 == 0){
+    document.querySelector('.won-title').classList.remove('hidden');
+    if(move % 2 == 0){
         document.querySelector('.won-message').innerHTML = 'Crosses won!';
     }
     else{
@@ -202,22 +202,22 @@ function win(number, winCells){
     }
     document.querySelector('.undo-btn').disabled = true;
     document.querySelector('.redo-btn').disabled = true;
-    undo = [];
+    undoArr = [];
 }
 function draw(){
-    document.querySelector('.won-title').classList.rego('hidden');
+    document.querySelector('.won-title').classList.remove('hidden');
     document.querySelector('.won-message').innerHTML = 'It is a draw!';
     document.querySelector('.undo-btn').disabled = true;
     document.querySelector('.redo-btn').disabled = true;
-    undo = [];
+    undoArr = [];
 }
 document.querySelector('.restart-btn').onclick = function reset(){
     for (x = 0; x < cells.length; x++) {
-        cells[x].classList.rego('ch', 'r', 'win', 'vertical', 'horizontal', 'diagonal-right', 'diagonal-left');
+        cells[x].classList.remove('ch', 'r', 'win', 'vertical', 'horizontal', 'diagonal-right', 'diagonal-left');
     }
     document.querySelector('.won-title').classList.add('hidden');
-    go = 0;
-    undo = [];
+    move = 0;
+    undoArr = [];
     document.querySelector('.undo-btn').disabled = true;
     localStorage.clear();
 }
