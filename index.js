@@ -1,100 +1,84 @@
-let move = 0;
 for (let i of document.querySelectorAll(".cell")) {
     i.onclick = function() {
         click(i);
     };
 }
 
-// adding X and O's
-document.querySelector('.field').onclick = function(event){
-    if(event.target.className == 'cell') {
-        if(move % 2 == 0){
-            event.target.classList.add('ch');
-        }
-        else{
-            event.target.classList.add('r');
-let step = 0;
-let move = true;
-let story = [];
+let move = 0;
+let actions = [];
+let ifCan = true;
 let count = 1;
 
-if (localStorage.getItem("data")){  recover(); }
+if (localStorage.getItem("data")){
+    again();
+}
 
 function click(el) {
-    if (move) {
+    if (ifCan) {
         if (!el.hasChildNodes()) {
             if (count != 1){
                 for (let i = 1; i < count; i++) {
-                    story.pop();
+                    actions.pop();
                 }
                 count = 1;
             }
-              if (step % 2 === 0) {
+            if (move % 2 === 0) {
                 let X = document.createElement('div');
                 X.className = 'ch';
                 el.appendChild(X);
-            }
-              else {
+            }else {
                 let O = document.createElement('div');
                 O.className = 'r';
                 el.appendChild(O);
             }
-              step++;
-            story.push(el.id);
+            move++;
+            actions.push(el.id);
             document.querySelector('.undo-btn').disabled = false;
             document.querySelector('.redo-btn').disabled = true;
-            Check();
+            IfWorks();
         }
-        move++;
     }
 }
 
-  document.querySelector('.undo-btn').onclick = function() {
-    step--;
-  document.getElementById(story[story.length - count])
-    .removeChild(document.getElementById(story[story.length - count]).firstChild);
+document.querySelector('.undo-btn').onclick = function() {
+    move--;
+    document
+    .getElementById(actions[actions.length - count])
+    .removeChild(document.getElementById(actions[actions.length - count]).firstChild);
 document.querySelector('.redo-btn').disabled = false;
-if (story.length - count === 0) {
+if (actions.length - count === 0) {
     document.querySelector('.undo-btn').disabled = true;
 }
 count++;
 };
 
-    if(move > 0) {
-        document.querySelector('.undo-btn').disabled = false;
 document.querySelector('.redo-btn').onclick = function() {
     document.querySelector('.undo-btn').disabled = false;
     count--;
-    if (story.length - count > story.length - 2) {
+    if (actions.length - count > actions.length - 2) {
         document.querySelector('.redo-btn').disabled = true;
     }
-    if(move <= 0) {
-        document.querySelector('.undo-btn').disabled = true;
-    if (step % 2 === 0) {
+    if (move % 2 === 0) {
         let X = document.createElement('div');
         X.className = 'ch';
-        document.getElementById(story[story.length - count]).appendChild(X);
+        document.getElementById(actions[actions.length - count]).appendChild(X);
     } else {
         let O = document.createElement('div');
         O.className = 'r';
-        document.getElementById(story[story.length - count]).appendChild(O);
+        document.getElementById(actions[actions.length - count]).appendChild(O);
     }
-    stepp++;
+    movep++;
 };
 
-// undo redo
-document.querySelector('.undo').onclick = addEventListener("click", function e(event)){
-    move--;
-    function e() {
 document.querySelector('.restart.btn').onclick = function() {
-    step = 0;
-    story = [];
-    move = true;
+    move = 0;
+    actions = [];
+    ifCan = true;
     document.querySelector('.won-title').classList.add('hidden');
     RemoveMarkedCells();
 };
 
-function Check() {
+function IfWorks() {
     let size = document.querySelector('.field').childNodes.length;
     let MarkedCells = 0;
     for (let i = 0; i < size; i++) {
@@ -112,17 +96,17 @@ function Check() {
                     }
                     if (el === size - 1) {
                         document.querySelector('.won-title').classList.remove('hidden');
-                        if (document.querySelector('.field').childNodes[i].childNodes[el].firstChild.className === 'ch') {
-                            document.querySelector('.won-message').textContent = "Crosses won!";
+                  if (document.querySelector('.field').childNodes[i].childNodes[el].firstChild.className === 'ch') {
+                            document.querySelector('.won-message').textContent = "Win of crosses!";
                         } else {
-                            document.querySelector('.won-message').textContent = "Toes won!";
+                            document.querySelector('.won-message').textContent = "Win of toes!";
                         }
                         for (let winCell = 0; winCell < size; winCell++) {
                             document.querySelector('.field').childNodes[i].childNodes[winCell].classList.add('.win');
                             document.querySelector('.field').childNodes[i].childNodes[winCell].classList.add('horizontal');
                         }
                         document.querySelector('.undo-btn').disabled =true;
-                        move = false;
+                        ifCan = false;
                     }
                 }
             }
@@ -150,7 +134,7 @@ function Check() {
                             document.querySelector('.field').childNodes[winCell].childNodes[i].classList.add('vertical');
                         }
                         document.querySelector('.undo-btn').disabled = true;
-                        move = false;
+                        ifCan = false;
                     }
                 }
             }
@@ -178,7 +162,7 @@ function Check() {
                         document.querySelector('.field').childNodes[winCell].childNodes[winCell].classList.add('diagonal-right');
                     }
                     document.querySelector('.undo-btn').disabled = true;
-                    move = false;
+                    ifCan = false;
                 }
             }
         }
@@ -210,7 +194,7 @@ function Check() {
                             .childNodes[winCell].childNodes[size - 1 - winCell].classList.add('diagonal-left');
                     }
                     document.querySelector('.field')
-                    move = false;
+                    ifCan = false;
                 }
             }
         }
@@ -240,13 +224,13 @@ function RemoveMarkedCells() {
     }
 }
 
-function recover() {
+function again() {
     let size =  document.querySelector('.field').childNodes.length;
     let information = JSON.parse(this.localStorage.getItem('data'));
-    step = information.Step;
-    count = information.count;
-    story = information.story;
-    move = information.move;
+    move = information.Move;
+    count = information.Count;
+    actions = information.Actions;
+    ifCan = information.ifCan;
     if (information.UndoButton !== document.querySelector('undo-btn').disabled) {
         document.querySelector('.undo-btn').disabled = !document.querySelector('.undo-btn').disabled;
     }
@@ -272,5 +256,5 @@ function recover() {
             }
         }
     }
-    Check();
+    IfWorks();
 }
