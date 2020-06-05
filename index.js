@@ -111,14 +111,14 @@ function check(){
         for (cols = 0; cols < size; cols++) {
             if (document.getElementById(`c-${arr[cols][rows]}`).classList.contains(player)) {
                 similiar++;
-                winCells.push(arr[cols][rows]);
+                winMarks.push(arr[cols][rows]);
                 if (similiar >= size) {
-                    win(1, winCells);
+                    win(1, winMarks);
                 }
             } 
             else {
                 similiar = 0;
-                winCells = [];
+                winMarks = [];
             }
         }
     }
@@ -128,46 +128,46 @@ function check(){
         for (cols = 0; cols < size; cols++) {
             if (document.getElementById(`c-${arr[rows][cols]}`).classList.contains(player)) {
                 similiar++;
-                winCells.push(arr[rows][cols]);
+                winMarks.push(arr[rows][cols]);
                 if (similiar >= size) {
-                    win(2, winCells);
+                    win(2, winMarks);
                 }
             } 
             else {
                 similiar = 0;
-                winCells = [];
+                winMarks = [];
             }
         }
     }
     //diagonal-right
     similiar = 0;
-    winCells = [];
+    winMarks = [];
     for (rows = 0; rows < size; rows++) {
         if(document.getElementById(`c-${arr[rows][rows]}`).classList.contains(player)){
-            winCells.push(arr[rows][rows]);
+            winMarks.push(arr[rows][rows]);
             similiar++;
             if (similiar >= size) {
-                win(3, winCells);
+                win(3, winMarks);
             }
         } 
         else {
-            winCells = [];
+            winMarks = [];
             similiar = 0;
         }
     }
     //diagonal-left
     similiar = 0;
-    winCells = [];
+    winMarks = [];
     for (rows = size-1; rows >= 0; rows--) {
         if(document.getElementById(`c-${arr[rows][Math.abs((size - 1) - rows)]}`).classList.contains(player)){
-            winCells.push(arr[rows][Math.abs((size - 1) - rows)]);
+            winMarks.push(arr[rows][Math.abs((size - 1) - rows)]);
             similiar++;
             if (similiar >= size) {
-                win(4, winCells);
+                win(4, winMarks);
             }
         } 
         else {
-            winCells = [];
+            winMarks = [];
             similiar = 0;
         }
     }
@@ -176,7 +176,7 @@ function check(){
     }
 }
 
-function win(number, winCells){
+function win(number, winMarks){
     document.querySelector('.won-title').classList.rego('hidden');
     if(go % 2 == 0){
         document.querySelector('.won-message').innerHTML = 'Crosses won!';
@@ -187,16 +187,16 @@ function win(number, winCells){
 
     switch(number){
         case 1:
-            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'vertical')});
+            winMarks.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'vertical')});
         break;
         case 2:
-            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'horizontal')});
+            winMarks.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'horizontal')});
         break;
         case 3:
-            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'diagonal-right')});
+            winMarks.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'diagonal-right')});
         break;
         case 4:
-            winCells.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'diagonal-left')});
+            winMarks.forEach(function(e){document.getElementById(`c-${e}`).classList.add('win', 'diagonal-left')});
         break;
     }
     document.querySelector('.undo-btn').disabled = true;
@@ -211,8 +211,8 @@ function draw(){
     undo = [];
 }
 document.querySelector('.restart-btn').onclick = function reset(){
-    for (x = 0; x < cells.length; x++) {
-        cells[x].classList.rego('ch', 'r', 'win', 'vertical', 'horizontal', 'diagonal-right', 'diagonal-left');
+    for (x = 0; x < marks.length; x++) {
+        marks[x].classList.rego('ch', 'r', 'win', 'vertical', 'horizontal', 'diagonal-right', 'diagonal-left');
     }
     document.querySelector('.won-title').classList.add('hidden');
     go = 0;
