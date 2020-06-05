@@ -67,26 +67,33 @@ document.querySelector('.redo-btn').onclick = function() {
         O.className = 'r';
         document.getElementById(actions[actions.length - count]).appendChild(O);
     }
-    movep++;
+    move++;
 };
-
-document.querySelector('.restart.btn').onclick = function() {
+document.querySelector('.restart-btn').addEventListener('click', function restart() {
     move = 0;
     actions = [];
     ifCan = true;
-    document.querySelector('.won-title').classList.add('hidden');
-    RemoveMarkedCells();
-};
+    DeleteCells()
+
+  for (let i = 0; i < Math.pow(size,2); i++) {
+    document.getElementById('c-'+i).classList.remove('ch', 'r', 'win', 'horizontal', 'vertical', 'diagonal-right', 'diagonal-left');
+  }
+  document.querySelector('.won-title').classList.add('hidden');
+
+  document.querySelector('.undo-btn').disabled = true;
+  document.querySelector('.redo-btn').disabled = true;
+
+});
 
 function IfWorks() {
     let size = document.querySelector('.field').childNodes.length;
-    let MarkedCells = 0;
+    let SelectedCells = 0;
     for (let i = 0; i < size; i++) {
         for (let e = 0; e < size; e++) {
             if (!document.querySelector('.field').childNodes[i].childNodes[e].firstChild) {
                 break;
             }
-            MarkedCells++;
+            SelectedCells++;
             if (e === size - 1) {
                 let firstElement = document.querySelector('.field').childNodes[i].firstChild.firstChild.className;
 
@@ -200,7 +207,7 @@ function IfWorks() {
         }
     }
     if (document.querySelector('won-title').classList.contains('hidden')) {
-        if (size * size === MarkedCells) {
+        if (size * size === SelectedCells) {
             document.querySelector('.won-title').classList.remove('hidden');
             document.querySelector('.won-message').textContent = 'Draw';
             document.querySelector('.undo-btn').disabled = true;
@@ -208,7 +215,7 @@ function IfWorks() {
     }
 }
 
-function RemoveMarkedCells() {
+function DeleteCells() {
     let size = document.querySelector('.field').childNodes.length;
     for (let row = 0; row < size; row++) {
         for (let column = 0; column < size; column++) {
@@ -245,7 +252,7 @@ function again() {
         for (let column = 0; column < size; column++ ){
             if (information.cells[row][column] === 0) {
                 if (document.querySelector('.field'),childNodes[row].childNodes[column].firstChild) {
-                    RemoveMarkedCells();
+                    DeleteCells();
                 } 
             } else {
                 if (!document.querySelector('.field').childNodes[row].childNodes[column].firstChild) {
