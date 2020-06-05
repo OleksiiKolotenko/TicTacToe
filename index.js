@@ -222,37 +222,37 @@ function RemoveMarkedCells() {
     }
 }
 
-function recover() {
-    let size =  document.querySelector('.field').childNodes.length;
-    let information = JSON.parse(this.localStorage.getItem('data'));
-    step = information.Step;
-    count = information.count;
-    story = information.story;
-    move = information.move;
-    if (information.UndoButton !== document.querySelector('undo-btn').disabled) {
-        document.querySelector('.undo-btn').disabled = !document.querySelector('.undo-btn').disabled;
-    }
-    if (information.RedoButton !== document.querySelector('.redo-btn').disabled) {
-        document.querySelector('redo-btn').disabled = !document.querySelector('.redo-btn').disabled;
-    }
-    if (information.State !== document.querySelector('.won-title').classList.contains('hidden')) {
-        document.querySelector('.won-title').classList.toggle('hidden');
-    }
-    document.querySelector('.won-message').textContent = information.WinMessage;
-    for (let row = 0; row < size; row++) {
-        for (let column = 0; column < size; column++ ){
-            if (information.cells[row][column] === 0) {
-                if (document.querySelector('.field'),childNodes[row].childNodes[column].firstChild) {
-                    RemoveMarkedCells();
-                } 
-            } else {
-                if (!document.querySelector('.field').childNodes[row].childNodes[column].firstChild) {
-                    let cell = document.createElement('div');
-                    cell.className = information.cells[row][column];
-                    document.querySelector('.field').childNodes[row].childNodes[column].appendChild(cell);
-                }
-            }
+function restart() {
+  let size = document.querySelector('.field').childNodes.length;
+  let info = JSON.parse(this.localStorage.getItem('data'));
+  step = data.Step;
+  counter = info.Counter;
+  history = info.History;
+  canMove = info.CanMove;
+  if (info.UndoButton != document.querySelector('.undo-btn').disabled) {
+    document.querySelector('.undo-btn').disabled = !document.querySelector('.undo-btn').disabled;
+  }
+  if (data.RedoButton != document.querySelector('.redo-btn').disabled) {
+    document.querySelector('.redo-btn').disabled = !document.querySelector('.redo-btn').disabled;
+  }
+  if (data.State != document.querySelector('.won-title').classList.contains('hidden')) {
+    document.querySelector('.won-title').classList.toggle('hidden');
+  }
+  document.querySelector('.won-message').textContent = data.WinMessage;
+  for (let row = 0; row < size; row++) {
+    for (let column = 0; column < size; column++) {
+      if (info.Cells[row][column] == 0) {
+        if (document.querySelector('.field').childNodes[row].childNodes[column].firstChild) {
+          removeMarkedCells();
         }
+      } else {
+        if (!document.querySelector('.field').childNodes[row].childNodes[column].firstChild) {
+          let cell = document.createElement('div');
+          cell.className = info.Cells[row][column];
+          document.querySelector('.field').childNodes[row].childNodes[column].appendChild(cell);
+        }
+      }
     }
-    Check();
+  }
+  check();
 }
